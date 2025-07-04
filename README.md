@@ -26,3 +26,6 @@ pip install -r requirements.txt
 flask run
 o
 python run.py
+## usuario
+user: admin
+password: admin
