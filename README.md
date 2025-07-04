@@ -17,7 +17,6 @@ cd JuezVirtual
 python -m venv juez
 
 # 3. Activar el entorno virtual
-# En Windows:
 juez\Scripts\activate.bat
 
 # 4. Instalar desde requirements.txt 
@@ -25,3 +24,5 @@ pip install -r requirements.txt
 
 # 5. Ejecutar la aplicación
 flask run
+o
+python run.py
