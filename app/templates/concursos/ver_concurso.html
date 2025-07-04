@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Ver Concurso - {{ concurso.nombre }}{% endblock %}
+
+{% block navbar %}
+  {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Concurso: {{ concurso.nombre }}</h2>
+
+  {% set now_naive = now.replace(tzinfo=None) %}
+
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white 
+        {% if now_naive < concurso.fecha_inicio %}
+          bg-info
+        {% elif now_naive <= concurso.fecha_fin %}
+          bg-success
+        {% else %}
+          bg-secondary
+        {% endif %} mb-3">
+        
+        <div class="card-header">Estado</div>
+        <div class="card-body">
+          <h5 class="card-title">
+            {% if now < concurso.fecha_inicio %}
+              <span class="badge bg-info">Próximo</span>
+            {% elif now <= concurso.fecha_fin %}
+              <span class="badge bg-success">Activo</span>
+            {% else %}
+              <span class="badge bg-secondary">Finalizado</span>
+            {% endif %}
+          </h5>
+          
+          <p class="card-text">
+            {% if now_naive <= concurso.fecha_fin %}
+              Termina el {{ (concurso.fecha_fin).strftime('%Y-%m-%d %H:%M') }}
+            {% else %}
+              Finalizó el {{ (concurso.fecha_fin).strftime('%Y-%m-%d %H:%M') }}
+            {% endif %}
+          </p>
+
+          {% if now_naive <= concurso.fecha_fin %}
+          <div id="contador" class="fw-bold text-danger"></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4>Problemas asociados</h4>
+  {% if concurso.concursos_problemas %}
+    <table class="table table-striped table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Código</th>
+          <th>Título</th>
+          <th class="text-center">Veredicto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set colores = ['primary', 'success', 'danger', 'warning', 'info', 'dark', 'secondary'] %}
+        {% for cp in concurso.concursos_problemas|sort(attribute='orden_problema') %}
+        {% set problema = cp.problema %}
+        {% set info = veredictos.get(problema.id) %}
+        <tr class="{% if info and info.resuelto %}table-success{% endif %}">
+          <td>{{ loop.index }}</td>
+          <td>
+            <a href="{{ url_for('concursos.ver_problema_publico',
+                                concurso_id=concurso.id,
+                                problema_id=problema.id)
+                          }}" class="text-decoration-none">
+              {{ problema.codigo }}
+            </a>
+          </td>
+          <td>
+            <a href="{{ url_for('concursos.ver_problema_publico',
+                                concurso_id=concurso.id,
+                                problema_id=problema.id) }}" class="text-decoration-none">
+              {{ problema.titulo }}
+            </a>
+          </td>
+          <td class="text-center fs-5">
+            {% if info and info.resuelto %}
+              <span class="badge rounded-circle bg-{{ colores[info.color % colores|length] }} p-3" title="Resuelto en {{ info.intentos }} intento(s)">🎈 {{ info.intentos }}</span>
+            {% elif info %}
+              <span class="text-warning" title="{{ info.intentos }} intento(s)">{{ info.intentos }}</span>
+            {% else %}
+              <span class="text-muted" title="Sin envíos">–</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h5 class="mt-4">Tus últimos envíos en este concurso</h5>
+    {% if envios_usuario %}
+    <table class="table table-sm table-bordered table-striped align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Problema</th>
+          <th>Lenguaje</th>
+          <th>Veredicto</th>
+          <th>Tiempo (s)</th>
+          <th>Memoria (KB)</th>
+          <th>Enviado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for envio in envios_usuario %}
+        <tr>
+          <td>{{ envio.id }}</td>
+          <td>{{ envio.problema.codigo }} - {{ envio.problema.titulo }}</td>
+          <td>{{ envio.lenguaje.nombre }}</td>
+          <td>
+            {% if envio.veredicto %}
+              {% set codigo = envio.veredicto.codigo %}
+              {% set descripcion = envio.veredicto.descripcion %}
+              {% if codigo == 'AC' %}
+                <span class="badge bg-success" data-bs-toggle="tooltip" title="{{ descripcion }}">
+                  <i class="bi bi-check-circle-fill"></i> {{ codigo }}
+                </span>
+              {% else %}
+                <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ descripcion }}">
+                  <i class="bi bi-x-circle-fill"></i> {{ codigo }}
+                </span>
+              {% endif %}
+            {% else %}
+              <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Evaluación pendiente">
+                <i class="bi bi-hourglass-split"></i> Pendiente
+              </span>
+            {% endif %}
+          </td>
+          <td>{{ envio.tiempo_ejecucion if envio.tiempo_ejecucion is not none else '-' }}</td>
+          <td>{{ envio.memoria_usada if envio.memoria_usada is not none else '-' }}</td>
+          <td>{{ envio.enviado_en.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>No tienes envíos en este concurso aún.</p>
+    {% endif %}
+
+  {% else %}
+    <p>No hay problemas asignados a este concurso.</p>
+  {% endif %}
+
+  <a href="{{ url_for('concursos.lista_concursos') }}" class="btn btn-secondary mt-3">Volver a la lista de concursos</a>
+</div>
+
+{% if concurso.fecha_fin > now %}
+<script>
+  const fechaFin = new Date("{{ concurso.fecha_fin.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+
+  const interval = setInterval(() => {
+    const ahora = new Date().getTime();
+    const distancia = fechaFin - ahora;
+
+    if (distancia <= 0) {
+      clearInterval(interval);
+      document.getElementById("contador").innerHTML = "¡Concurso finalizado!";
+    } else {
+      const horas = Math.floor(distancia / (1000 * 60 * 60));
+      const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+      document.getElementById("contador").innerHTML = `Tiempo restante: ${horas}h ${minutos}m ${segundos}s`;
+    }
+  }, 1000);
+</script>
+{% endif %}
+{% endblock %}

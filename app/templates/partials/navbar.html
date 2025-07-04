@@ -1,0 +1,91 @@
+<a href="{{ url_for('main.dashboard') }}" class="logo-flotante" style="position: fixed; top: 10px; left: 10px; z-index: 1100; display: flex; align-items: center; text-decoration: none;">
+  <!--<img src="{{ url_for('static', filename='img/logo_01.png') }}" alt="Logo" style="height: 150px; width: 150px; object-fit: contain; border-radius: 8px; margin: 0; padding: 0; display: block;">
+-->
+</a>
+
+<!-- Navbar normal, fijo en top 0 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow fixed-top px-4" style="z-index: 1050;">
+  <a class="navbar-brand fw-bold text-light" href="{{ url_for('main.dashboard') }}">
+    Juez Virtual
+  </a>
+
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navModernDark" 
+          aria-controls="navModernDark" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navModernDark">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      {% if current_user.is_authenticated and current_user.es_admin %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-code-slash me-1"></i> Problemas
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('problemas.lista_problemas') }}">Lista de problemas</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('problemas.nuevo_problema') }}">Registrar nuevo problema</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ url_for('problemas.mis_problemas') }}">Mis problemas</a></li>
+          </ul>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link text-white" href="{{ url_for('problemas.lista_problemas') }}">
+            <i class="bi bi-code-slash me-1"></i> Problemas
+          </a>
+        </li>
+      {% endif %}
+      <li class="nav-item mx-2">
+        <a class="nav-link text-light fw-semibold" href="{{ url_for('concursos.lista_concursos') }}">
+          <i class="bi bi-trophy me-1"></i> Concursos
+        </a>
+      </li>
+      <li class="nav-item mx-2">
+        <a class="nav-link text-light fw-semibold" href="{{ url_for('problemas.mis_envios') }}">
+          <i class="bi bi-send-check me-1"></i> Mis Envíos
+        </a>
+      </li>
+      <li class="nav-item mx-2">
+        <a class="nav-link text-light fw-semibold" href="{{ url_for('problemas.ranking_ac') }}">
+          <i class="bi bi-bar-chart-line-fill me-1"></i> Ranking
+        </a>
+      </li>
+
+      {% if current_user.is_authenticated and current_user.es_admin %}
+      <li class="nav-item dropdown mx-2">
+        <a class="nav-link dropdown-toggle text-light fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-tools me-1"></i> Administración
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark shadow">
+          <li><a class="dropdown-item" href="{{ url_for('main.listar_usuarios') }}"><i class="bi bi-people-fill me-2"></i> Usuarios</a></li>
+          <!--<li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-code-fill me-2"></i> Lenguajes</a></li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-check2-circle me-2"></i> Veredictos</a></li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-person-badge-fill me-2"></i> Roles</a></li>
+          <li><a class="dropdown-item" href="#"><i class="bi bi-clipboard-check-fill me-2"></i> Panel Evaluación</a></li>-->
+          <li><a class="dropdown-item" href="{{ url_for('problemas.ver_problema_admin') }}"><i class="bi bi-code-slash me-1"></i> Administrar problemas</a></li>
+        </ul>
+ 
+        
+      </li>
+      {% endif %}
+    </ul>
+
+    {% if current_user.is_authenticated %}
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center text-light fw-semibold" href="#" id="userDropdownDark" role="button"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle me-2" style="font-size: 1.3rem;"></i>
+          {{ current_user.nombre_usuario }}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+            <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+          </a></li>
+        </ul>
+      </li>
+    </ul>
+    {% endif %}
+  </div>
+</nav>

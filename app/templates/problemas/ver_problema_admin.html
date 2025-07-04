@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Administrar Problemas{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Problemas Públicos</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Título</th>
+                <th>Autor ID</th>
+                <th>Tiempo (ms)</th>
+                <th>Memoria (MB)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for problema in problemas %}
+            <tr>
+                <td>{{ problema.codigo }}</td>
+                <td>{{ problema.titulo }}</td>
+                <td>{{ problema.autor.nombre_usuario }}</td>
+                <td>{{ problema.limite_tiempo or '-' }}</td>
+                <td>{{ problema.limite_memoria or '-' }}</td>
+                <td>
+                    <a href="{{ url_for('problemas.editar_problema_admin', problema_id=problema.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

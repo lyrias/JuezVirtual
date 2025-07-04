@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Registro{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/innav.html' %}
+{% endblock %}
+
+{% block content %}
+
+<h2 class="text-center mb-4">Registro de Usuario</h2>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <form method="POST" autocomplete="off" class="p-4 border rounded shadow" style="max-width: 400px; width: 100%; background-color: #fff;">
+    {{ form.hidden_tag() }}
+
+      <div class="mb-3">
+          {{ form.username.label(class="form-label") }}
+          {{ form.username(class="form-control") }}
+          {% for err in form.username.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+      </div>
+
+      <div class="mb-3">
+          {{ form.email.label(class="form-label") }}
+          {{ form.email(class="form-control") }}
+          {% for err in form.email.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+      </div>
+
+      <div class="mb-3">
+          {{ form.password.label(class="form-label") }}
+          {{ form.password(class="form-control") }}
+          {% for err in form.password.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+      </div>
+
+      <div class="mb-3">
+          {{ form.confirm_password.label(class="form-label") }}
+          {{ form.confirm_password(class="form-control") }}
+          {% for err in form.confirm_password.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+      </div>
+
+      {{ form.submit(class="btn btn-primary w-100") }}
+  </form>
+</div>
+
+{% endblock %}

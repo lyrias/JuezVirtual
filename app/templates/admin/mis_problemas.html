@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Mis Problemas{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Mis Problemas</h2>
+  <a href="{{ url_for('problemas.nuevo_problema') }}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Crear nuevo problema</a>
+</div>
+
+{% if datos_problemas %}
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Código</th>
+            <th>Título</th>
+            <th>Estado</th>
+            <th>Creado</th>
+            <th>Estadísticas</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for problema, total, aceptados, errores in datos_problemas %}
+            <tr>
+            <td>{{ problema.codigo }}</td>
+            <td>{{ problema.titulo }}</td>
+            <td>
+                {% if problema.es_publico %}
+                <span class="badge bg-success">Público</span>
+                {% else %}
+                <span class="badge bg-warning">Privado</span>
+                {% endif %}
+            </td>
+            <td>{{ problema.fecha_creacion.strftime('%Y-%m-%d') if problema.fecha_creacion else '—' }}</td>
+            <td>
+                <div class="progress" style="height: 25px;">
+                {% set total_envios = total if total > 0 else 1 %}
+                {% set porcentaje_aceptados = (aceptados / total_envios) * 100 %}
+                {% set porcentaje_errores = (errores / total_envios) * 100 %}
+
+                <div class="progress-bar bg-success" style="width: {{ porcentaje_aceptados }}%">
+                    {{ aceptados }}
+                </div>
+                <div class="progress-bar bg-danger" style="width: {{ porcentaje_errores }}%">
+                    {{ errores }}
+                </div>
+                </div>
+            </td>
+                <td>
+                    <a href="{{ url_for('problemas.ver_problema', problema_id=problema.id) }}" class="btn btn-sm btn-info">
+                        <i class="bi bi-eye-fill"></i> Ver
+                    </a>
+                    <a href="{{ url_for('problemas.editar_problema', problema_id=problema.id) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil-square"></i> Editar
+                    </a>
+
+                    <form action="{{ url_for('problemas.eliminar_problema', problema_id=problema.id) }}" method="POST" style="display:inline;" 
+                            onsubmit="return confirm('¿Estás seguro de eliminar este problema? Esta acción no se puede deshacer.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </form>
+                    </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+  </table>
+{% else %}
+  <div class="alert alert-info">Aún no has creado ningún problema.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Editar Usuario</h2>
+
+<form method="POST" action="{{ url_for('main.editar_usuario', usuario_id=usuario.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="mb-3">
+    <label for="nombre_usuario" class="form-label">Nombre de usuario</label>
+    <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario"
+           value="{{ usuario.nombre_usuario }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="correo" class="form-label">Correo electrónico</label>
+    <input type="email" class="form-control" id="correo" name="correo"
+           value="{{ usuario.correo }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="rol_id" class="form-label">Rol</label>
+    <select class="form-select" id="rol_id" name="rol_id" required>
+      {% for rol in roles %}
+        <option value="{{ rol.id }}" {% if rol.id == usuario.rol_id %}selected{% endif %}>{{ rol.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+  <label for="password" class="form-label">Nueva contraseña</label>
+  <input type="password" class="form-control" id="password" name="password" placeholder="Dejar vacío para no cambiar">
+</div>
+
+<div class="mb-3">
+  <label for="password_confirm" class="form-label">Confirmar nueva contraseña</label>
+  <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Repite la nueva contraseña">
+</div>
+
+  <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+  <a href="{{ url_for('main.listar_usuarios') }}" class="btn btn-secondary ms-2">Cancelar</a>
+</form>
+{% endblock %}

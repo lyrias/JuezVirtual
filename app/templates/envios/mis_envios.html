@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Mis Envíos{% endblock %}
+
+{% block navbar %}
+  {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Mis Envíos</h2>
+
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead class="table-dark text-center">
+      <tr>
+        <th style="min-width: 60px;">ID</th>
+        <th style="min-width: 180px;">Problema</th>
+        <th style="min-width: 130px;">Veredicto</th>
+        <th>Lenguaje</th>
+        <th style="min-width: 130px;">Tiempo Ejecución (Ms)</th>
+        <th style="min-width: 130px;">Memoria Usada (MB)</th>
+        <th style="min-width: 180px;">Enviado En</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for envio in envios %}
+      <tr class="text-center">
+        <td>{{ envio.id }}</td>
+        <td class="text-start">
+          <a href="{{ url_for('problemas.ver_problema_publico', problema_id=envio.problema.id) }}" class="text-decoration-none">
+            {{ envio.problema.titulo }}
+          </a>
+        </td>
+        <td>
+          {% if envio.veredicto %}
+            {% if envio.veredicto.codigo == 'AC' %}
+              <span class="badge bg-success" data-bs-toggle="tooltip" title="{{ envio.veredicto.descripcion }}">
+                <i class="bi bi-check-circle-fill"></i> {{ envio.veredicto.codigo }}
+              </span>
+            {% else %}
+              <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ envio.veredicto.descripcion }}">
+                <i class="bi bi-x-circle-fill"></i> {{ envio.veredicto.codigo }}
+              </span>
+            {% endif %}
+          {% else %}
+            <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Evaluación pendiente">
+              <i class="bi bi-hourglass-split"></i> Pendiente
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{{ url_for('problemas.descargar_codigo', envio_id=envio.id) }}" class="text-decoration-none" title="Descargar código fuente">
+            {{ envio.lenguaje.nombre }}
+          </a>
+        </td>
+        <td>{{ '%.3f'|format(envio.tiempo_ejecucion) if envio.tiempo_ejecucion else '-' }}</td>
+        <td>{{ envio.memoria_usada if envio.memoria_usada else '-' }}</td>
+        <td>{{ envio.enviado_en.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center">No tienes envíos aún.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<nav aria-label="Navegación de páginas">
+  <ul class="pagination justify-content-center">
+    {% set total_pages = (total // per_page) + (1 if total % per_page > 0 else 0) %}
+    
+    {% if page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('problemas.mis_envios', page=page-1) }}">Anterior</a>
+      </li>
+    {% endif %}
+    
+    {% for p in range(1, total_pages + 1) %}
+      <li class="page-item {% if p == page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('problemas.mis_envios', page=p) }}">{{ p }}</a>
+      </li>
+    {% endfor %}
+    
+    {% if page < total_pages %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('problemas.mis_envios', page=page+1) }}">Siguiente</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
+<script>
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+</script>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Lenguajes Disponibles</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Comando Compilar</th>
+            <th>Extensión</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lenguaje in lenguajes %}
+        <tr>
+            <td>{{ lenguaje.nombre }}</td>
+            <td>{{ lenguaje.comando_compilar }}</td>
+            <td>{{ lenguaje.extension_archivo }}</td>
+            <td>
+                <a href="{{ url_for('lenguajes.editar_lenguaje', id=lenguaje.id) }}" class="btn btn-sm btn-primary">Editar</a>
+                <form action="{{ url_for('lenguajes.eliminar_lenguaje', id=lenguaje.id) }}" method="post" style="display:inline;">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este lenguaje?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Ranking del Concurso{% endblock %}
+
+{% block navbar %}
+  {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 text-center">🏆Ranking del Concurso</h2>
+
+<div class="table-responsive">
+  <table class="table table-bordered text-center">
+  <thead class="table-dark">
+    <tr>
+      <th>Pos</th>
+      <th>Usuario</th>
+        {% for id, data in letras_problemas.items() %}
+            <th>{{ data.codigo }}</th>
+        {% endfor %}
+      <th>Resueltos</th>
+      <th>Último envío</th>
+      <th>Total AC</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for participante in ranking %}
+  <tr>
+    <td>{{ participante.pos }}</td>
+    <td>{{ participante.nombre_usuario }}</td>
+    {% for problema in problemas %}
+      <td>{{ participante.detalle_problemas[problema.id] }}</td>
+    {% endfor %}
+    <td>{{ participante.resueltos }}</td>
+    <td>{{ participante.ultimo_envio }}</td>
+    <td>{{ participante.tiempo_total }} min</td>
+  </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+</div>
+
+<nav aria-label="Paginación del ranking">
+  <ul class="pagination justify-content-center">
+    {% if page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page - 1 }}">Anterior</a>
+      </li>
+    {% endif %}
+
+    {% for p in range(1, pages + 1) %}
+      <li class="page-item {% if p == page %}active{% endif %}">
+        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+      </li>
+    {% endfor %}
+
+    {% if page < pages %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page + 1 }}">Siguiente</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
+<div class="text-center mt-4">
+  <a href="{{ url_for('concursos.ver_concurso', id=concurso_id) }}" class="btn btn-secondary">
+    Volver al concurso
+  </a>
+</div>
+
+{% endblock %}

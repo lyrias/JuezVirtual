@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Inicio{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/innav.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center"
+     style=" text-align: center; padding: -20px;">
+
+  <img src="{{ url_for('static', filename='img/fondo_02.png') }}" 
+       alt="Logo Juez Virtual" 
+       style="max-width: 150px; margin-bottom: 20px;">
+
+  <h1 class="mb-3">Bienvenido al Juez Virtual</h1>
+
+  <p class="lead mb-4">
+    <strong>Actualmente en fase Beta:</strong> ¡Tu feedback es muy importante para mejorar!
+  </p>
+
+</div>
+
+{% endblock %}

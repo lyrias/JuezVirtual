@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<h2>Editar Lenguaje</h2>
+<form method="post">
+    <div class="mb-3">
+        <label>Nombre</label>
+        <input name="nombre" value="{{ lenguaje.nombre }}" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label>Comando Compilar</label>
+        <input name="comando_compilar" value="{{ lenguaje.comando_compilar }}" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label>Extensión de Archivo</label>
+        <input name="extension_archivo" value="{{ lenguaje.extension_archivo }}" class="form-control">
+    </div>
+    <button class="btn btn-success">Guardar</button>
+    <a href="{{ url_for('lenguajes.lista_lenguajes') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

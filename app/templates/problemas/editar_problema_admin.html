@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Editar Problema{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Editar Problema: {{ problema.titulo }}</h2>
+<form method="POST" enctype="multipart/form-data" autocomplete="off">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.codigo.label }} {{ form.codigo(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.titulo.label }} {{ form.titulo(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.descripcion.label }} {{ form.descripcion(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.descripcion_entrada.label }} {{ form.descripcion_entrada(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.descripcion_salida.label }} {{ form.descripcion_salida(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.limite_tiempo.label }} {{ form.limite_tiempo(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.limite_memoria.label }} {{ form.limite_memoria(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.entrada_ejemplo.label }} {{ form.entrada_ejemplo(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.salida_ejemplo.label }} {{ form.salida_ejemplo(class="form-control") }}
+    </div>
+    <div class="form-check mb-3">
+        {{ form.es_publico(class="form-check-input") }}
+        {{ form.es_publico.label(class="form-check-label") }}
+    </div>
+    <div class="mb-3">
+      <label for="archivo_entradas" class="form-label">Archivo de Entradas (.txt)</label>
+      <input type="file" name="archivo_entradas" class="form-control" accept=".txt">
+      <small class="form-text text-muted">Deja vacío para no cambiar el archivo actual.</small>
+    </div>
+
+    <div class="mb-3">
+      <label for="archivo_salidas" class="form-label">Archivo de Salidas (.txt)</label>
+      <input type="file" name="archivo_salidas" class="form-control" accept=".txt">
+      <small class="form-text text-muted">Deja vacío para no cambiar el archivo actual.</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a href="{{ url_for('problemas.mis_problemas') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

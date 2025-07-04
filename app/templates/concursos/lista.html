@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Concursos{% endblock %}
+
+{% block navbar %}
+  {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>Concursos</h2>
+  {% if current_user.es_admin %}
+    <a href="{{ url_for('concursos.nuevo_concurso') }}" class="btn btn-primary mb-4">Crear nuevo concurso</a>
+  {% endif %}
+
+  {% set all_concursos = concursos_activos + concursos_proximos + concursos_finalizados %}
+
+  <h4>Concursos Activos</h4>
+  <table class="table table-bordered table-hover align-middle mb-4">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Inicio</th>
+        <th>Fin</th>
+        <th>Visibilidad</th>
+        <th>Faltan</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for concurso in concursos_activos %}
+      <tr>
+        <td>{{ concurso.nombre }}</td>
+        <td>{{ concurso.fecha_inicio.strftime('%Y-%m-%d %H:%M') if concurso.fecha_inicio else '' }}</td>
+        <td>{{ concurso.fecha_fin.strftime('%Y-%m-%d %H:%M') if concurso.fecha_fin else '' }}</td>
+        <td>{{ 'Público' if concurso.es_publico else 'Privado' }}</td>
+        <td><span class="countdown" data-fechainicio="{{ concurso.fecha_inicio.isoformat() }}"></span></td>
+        <td>
+          
+          
+          {% if current_user.id == concurso.creado_por %}
+            <a href="{{ url_for('concursos.editar_concurso', id=concurso.id) }}" class="btn btn-sm btn-warning me-1">Agregar problemas</a>
+            <a href="{{ url_for('concursos.editar_concurso_update', concurso_id=concurso.id) }}" class="btn btn-sm btn-info me-1">Editar</a>
+              <form action="{{ url_for('concursos.eliminar_concurso', concurso_id=concurso.id) }}" method="POST" style="display:inline;" 
+                onsubmit="return confirm('¿Seguro que quieres eliminar este concurso? Esta acción no se puede deshacer.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+          {% endif %}
+
+          {% if concurso.es_publico %}
+            <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-sm btn-primary">Entrar</a>
+          {% else %}
+            {% if current_user.id == concurso.creado_por or current_user.es_admin %}
+              <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-sm btn-primary">Entrar</a>
+            {% else %}
+              <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#passwordModal-{{ concurso.id }}">Ingresar con contraseña</button>
+            {% endif %}
+          {% endif %}
+          <a href="{{ url_for('concursos.ranking', concurso_id=concurso.id) }}" class="btn btn-sm btn-primary">
+            Ver Ranking
+          </a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center">No hay concursos activos.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h4>Concursos Próximos</h4>
+  <table class="table table-bordered table-hover align-middle mb-4">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Inicio</th>
+        <th>Fin</th>
+        <th>Visibilidad</th>
+        <th>Faltan</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for concurso in concursos_proximos %}
+      <tr>
+        <td>{{ concurso.nombre }}</td>
+        <td>{{ concurso.fecha_inicio.strftime('%Y-%m-%d %H:%M') if concurso.fecha_inicio else '' }}</td>
+        <td>{{ concurso.fecha_fin.strftime('%Y-%m-%d %H:%M') if concurso.fecha_fin else '' }}</td>
+        <td>{{ 'Público' if concurso.es_publico else 'Privado' }}</td>
+        <td><span class="countdown" data-fechainicio="{{ concurso.fecha_inicio.isoformat() }}"></span></td>
+        <td>
+         
+          {% if current_user.id == concurso.creado_por %}
+            <a href="{{ url_for('concursos.editar_concurso', id=concurso.id) }}" class="btn btn-sm btn-warning me-1">Agregar problemas</a>
+            <a href="{{ url_for('concursos.editar_concurso_update', concurso_id=concurso.id) }}" class="btn btn-sm btn-info me-1">Editar</a>
+
+            <form action="{{ url_for('concursos.eliminar_concurso', concurso_id=concurso.id) }}" method="POST" style="display:inline;" 
+                  onsubmit="return confirm('¿Seguro que quieres eliminar este concurso? Esta acción no se puede deshacer.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+            </form>
+          {% endif %}
+
+          {% if concurso.es_publico %}
+            <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-sm btn-primary">Entrar</a>
+          {% else %}
+            {% if current_user.id == concurso.creado_por or current_user.es_admin %}
+              <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-sm btn-primary">Entrar</a>
+            {% else %}
+              <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#passwordModal-{{ concurso.id }}">Ingresar con contraseña</button>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center">No hay concursos próximos.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h4>Concursos Finalizados</h4>
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Inicio</th>
+        <th>Fin</th>
+        <th>Visibilidad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for concurso in concursos_finalizados %}
+      <tr>
+        <td>{{ concurso.nombre }}</td>
+        <td>{{ concurso.fecha_inicio.strftime('%Y-%m-%d %H:%M') if concurso.fecha_inicio else '' }}</td>
+        <td>{{ concurso.fecha_fin.strftime('%Y-%m-%d %H:%M') if concurso.fecha_fin else '' }}</td>
+        <td>{{ 'Público' if concurso.es_publico else 'Privado' }}</td>
+        <td>
+         
+          {% if current_user.id == concurso.creado_por %}
+
+            <a href="{{ url_for('concursos.editar_concurso_update', concurso_id=concurso.id) }}" class="btn btn-sm btn-info me-1">Editar</a>
+          {% endif %}
+
+          {% if concurso.es_publico %}
+            <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-sm btn-primary">Entrar</a>
+          {% else %}
+            {% if current_user.id == concurso.creado_por or current_user.es_admin %}
+              <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-sm btn-primary">Entrar</a>
+            {% else %}
+              <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#passwordModal-{{ concurso.id }}">Ingresar con contraseña</button>
+            {% endif %}
+          {% endif %}
+          <a href="{{ url_for('concursos.ranking', concurso_id=concurso.id) }}" class="btn btn-sm btn-primary">
+            Ver Ranking
+          </a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center">No hay concursos finalizados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% for concurso in all_concursos %}
+  {% if not concurso.es_publico and not (current_user.id == concurso.creado_por or current_user.es_admin) %}
+    <div class="modal fade" id="passwordModal-{{ concurso.id }}" tabindex="-1" aria-labelledby="passwordModalLabel-{{ concurso.id }}" aria-hidden="true">
+      <div class="modal-dialog">
+        <form class="modal-content" method="POST" action="{{ url_for('concursos.acceso_privado', concurso_id=concurso.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="passwordModalLabel-{{ concurso.id }}">Acceso al concurso: {{ concurso.nombre }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p>Este concurso es privado. Ingresa la contraseña para acceder:</p>
+            <div class="mb-3">
+              <label for="password-{{ concurso.id }}" class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="password-{{ concurso.id }}" name="password" required autofocus>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    function actualizarCountdowns() {
+      document.querySelectorAll('.countdown').forEach(span => {
+        const inicio = new Date(span.dataset.fechainicio).getTime();
+        const ahora = Date.now();
+        const diff = inicio - ahora;
+        if (diff <= 0) {
+          span.textContent = '¡Ya empezó!';
+          span.classList.replace('text-danger', 'text-success');
+        } else {
+          const h = Math.floor(diff / 3600000);
+          const m = Math.floor((diff % 3600000) / 60000);
+          const s = Math.floor((diff % 60000) / 1000);
+          span.textContent = `${h}h ${m}m ${s}s`;
+        }
+      });
+    }
+    setInterval(actualizarCountdowns, 1000);
+    actualizarCountdowns();
+  </script>
+{% endblock %}

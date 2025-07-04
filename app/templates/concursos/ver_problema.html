@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Ver Problema - {{ problema.titulo }}{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="mb-4 text-center">
+    <h2>{{ problema.titulo }}</h2>
+  </div>
+
+  <div class="mb-4 text-center">
+    <h4>Estadísticas</h4>
+    <div class="d-flex justify-content-center gap-4 flex-wrap align-items-center">
+      <div><strong>Total envíos:</strong> {{ total_envios }}</div>
+      <div><strong>Aceptados:</strong> <span class="text-success">{{ aceptados }}</span></div>
+      <div><strong>Rechazados:</strong> <span class="text-danger">{{ rechazados }}</span></div>
+      <div><strong>Límite tiempo:</strong> {{ problema.limite_tiempo }} Sec</div>
+      <div><strong>Límite memoria:</strong> {{ problema.limite_memoria }} Mb</div>
+    </div>
+  </div>
+
+  <div class="mb-4 text-center">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enviarModal">
+      Enviar
+    </button>
+  </div>
+
+  <div class="modal fade" id="enviarModal" tabindex="-1" aria-labelledby="enviarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" method="POST" action="{{ url_for('concursos.enviar', concurso_id=concurso.id, problema_id=problema.id) }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="enviarModalLabel">Enviar solución</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="lenguaje" class="form-label">Lenguaje de programación</label>
+            <select class="form-select" id="lenguaje" name="lenguaje_id" required>
+              <option value="">--</option>
+              {% for lang in lenguajes %}
+                <option value="{{ lang.id }}">{{ lang.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="archivo" class="form-label">Archivo</label>
+            <input class="form-control" type="file" id="archivo" name="archivo" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Enviar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <p><strong>Código:</strong> {{ problema.codigo }}</p>
+      <hr>
+      <h4>Descripción</h4>
+      <p>{{ problema.descripcion }}</p>
+
+      <h4>Entrada</h4>
+      <p>{{ problema.descripcion_entrada }}</p>
+
+      <h4>Salida</h4>
+      <p>{{ problema.descripcion_salida }}</p>
+
+      <h4>Ejemplo</h4>
+      <div class="row my-4">
+        <div class="col-md-6">
+          <h5>Entrada</h5>
+          <pre class="border p-3">{{ problema.entrada_ejemplo }}</pre>
+        </div>
+        <div class="col-md-6">
+          <h5>Salida</h5>
+          <pre class="border p-3">{{ problema.salida_ejemplo }}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('concursos.ver_concurso', id=concurso.id) }}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

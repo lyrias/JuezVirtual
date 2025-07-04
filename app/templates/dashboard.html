@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+ 
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+  <div class="main">
+    <div class="row">
+      <div class="col-12">
+        <h1>Bienvenido, {{ current_user.nombre_usuario }}!</h1>     
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Últimos Problemas</div>
+          <div class="card-body">
+            <ul class="list-group">
+              {% for problema in ultimos_problemas %}
+                <li class="list-group-item">{{ problema.codigo }} - {{ problema.titulo }}</li>
+              {% else %}
+                <li class="list-group-item text-muted">No hay problemas publicados aún.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Concursos Activos</div>
+          <div class="card-body">
+            <ul class="list-group">
+              {% for concurso in concursos_activos %}
+                <li class="list-group-item">
+                  {{ concurso.nombre }} -
+                  {% if concurso.fecha_fin and concurso.fecha_inicio %}
+                    {# Mostrar tiempo restante para finalizar #}
+                    {% set tiempo_restante = concurso.fecha_fin - now %}
+                    {{ tiempo_restante.days }}d {{ (tiempo_restante.seconds // 3600) }}h
+                  {% else %}
+                    Fecha no disponible
+                  {% endif %}
+                </li>
+              {% else %}
+                <li class="list-group-item text-muted">No hay concursos activos.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <h4>Últimos Envíos</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Problema</th>
+            <th>Lenguaje</th>
+            <th>Estado</th>
+            <th>Tiempo</th>
+            <th>Memoria</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for envio in ultimos_envios %}
+          <tr>
+            <td>{{ envio.problema.codigo }}</td>
+            <td>{{ envio.lenguaje.nombre }}</td>
+            <td>
+              {% if envio.veredicto %}
+                {% if envio.veredicto.codigo == 'AC' %}
+                  <span class="badge bg-success" data-bs-toggle="tooltip" title="{{ envio.veredicto.descripcion }}">
+                    <i class="bi bi-check-circle-fill"></i> {{ envio.veredicto.codigo }}
+                  </span>
+                {% else %}
+                  <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ envio.veredicto.descripcion }}">
+                    <i class="bi bi-x-circle-fill"></i> {{ envio.veredicto.codigo }}
+                  </span>
+                {% endif %}
+              {% else %}
+                <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Evaluación pendiente">
+                  <i class="bi bi-hourglass-split"></i> Pendiente
+                </span>
+              {% endif %}
+            </td>
+            <td>{{ envio.tiempo_ejecucion }} ms</td>
+            <td>{{ envio.memoria_usada }} Mb</td>
+            <td>{{ envio.enviado_en.strftime('%d/%m/%Y %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

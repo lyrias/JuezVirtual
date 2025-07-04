@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Editar Concurso{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Editar Concurso</h2>
+
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.nombre.label(class="form-label") }}
+      {{ form.nombre(class="form-control") }}
+      {% if form.nombre.errors %}
+        <div class="text-danger">{{ form.nombre.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.descripcion.label(class="form-label") }}
+      {{ form.descripcion(class="form-control", rows="4") }}
+      {% if form.descripcion.errors %}
+        <div class="text-danger">{{ form.descripcion.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.fecha_inicio.label(class="form-label") }}
+      {{ form.fecha_inicio(class="form-control", type="datetime-local") }}
+      {% if form.fecha_inicio.errors %}
+        <div class="text-danger">{{ form.fecha_inicio.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.fecha_fin.label(class="form-label") }}
+      {{ form.fecha_fin(class="form-control", type="datetime-local") }}
+      {% if form.fecha_fin.errors %}
+        <div class="text-danger">{{ form.fecha_fin.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3 form-check">
+      {{ form.es_publico(class="form-check-input") }}
+      {{ form.es_publico.label(class="form-check-label") }}
+      {% if form.es_publico.errors %}
+        <div class="text-danger">{{ form.es_publico.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class="form-control") }}
+      {% if form.password.errors %}
+        <div class="text-danger">{{ form.password.errors[0] }}</div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+  </form>
+</div>
+{% endblock %}

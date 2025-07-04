@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Editar Concurso - {{ concurso.nombre }}{% endblock %}
+
+{% block script_recursos %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <script>
+    $('#tabla-problemas-todos').DataTable({
+      pageLength: 10,
+      language: {
+        search: "Buscar problemas:",
+        lengthMenu: "Mostrar _MENU_ registros",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        paginate: {
+          first: "Primero",
+          last: "Último",
+          next: "Siguiente",
+          previous: "Anterior"
+        }
+      }
+    });
+  </script>
+{% endblock %}
+
+{% block navbar %}
+  {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Editar Concurso: {{ concurso.nombre }}</h2>
+
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% set todos_los_problemas = problemas_publicos.items + problemas_privados.items %}
+
+    <h4>Problemas Disponibles</h4>
+    <table id="tabla-problemas-todos" class="table table-striped table-bordered mb-5">
+      <thead class="table-dark">
+        <tr>
+          <th>Seleccionar</th>
+          <th>Código</th>
+          <th>Título</th>
+          <th>Autor</th>
+          <th>Visibilidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for problema in todos_los_problemas %}
+        <tr>
+          <td>
+            <input type="checkbox" name="problemas" value="{{ problema.id }}"
+              {% if problema.id in problemas_actuales_ids %}checked{% endif %}>
+          </td>
+          <td>{{ problema.codigo }}</td>
+          <td>{{ problema.titulo }}</td>
+          <td>{{ problema.autor.nombre_usuario if problema.autor else 'Desconocido' }}</td>
+          <td>
+            {% if problema.es_publico %}
+              <span class="badge bg-success">Público</span>
+            {% else %}
+              <span class="badge bg-warning">Privado</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success mt-3">Guardar problemas</button>
+    <a href="{{ url_for('concursos.lista_concursos') }}" class="btn btn-secondary mt-3">Volver</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Error de Conexión{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="text-danger display-4">⚠ Error de Conexión</h1>
+    <p class="lead">No se pudo establecer conexión.</p>
+    <p>Es posible que el sistema esté en mantenimiento o el servidor no esté disponible.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary mt-3">Reintentar</a>
+</div>
+{% endblock %}

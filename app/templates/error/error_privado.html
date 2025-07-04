@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Error de Conexión{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="text-danger display-4">Acceso Denegado</h1>
+    <p class="lead">{{ mensaje }}</p>
+    <a href="{{ url_for('problemas.mis_envios') }}" class="btn btn-primary mt-3">Volver</a>
+</div>
+{% endblock %}

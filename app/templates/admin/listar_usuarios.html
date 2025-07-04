@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Usuarios{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Lista de Usuarios</h2>
+
+<table class="table table-hover table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Nombre de Usuario</th>
+      <th>Correo</th>
+      <th>Rol</th>
+      <th>Fecha de Registro</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for usuario in usuarios %}
+    <tr>
+      <td>{{ usuario.id }}</td>
+      <td>{{ usuario.nombre_usuario }}</td>
+      <td>{{ usuario.correo }}</td>
+      <td>
+        {% if usuario.rol_id == 1 %}
+          <span class="badge bg-primary">Administrador</span>
+        {% elif usuario.rol_id == 2 %}
+          <span class="badge bg-secondary">Concursante</span>
+        {% else %}
+          <span class="badge bg-light text-dark">Otro</span>
+        {% endif %}
+      </td>
+      <td>{{ usuario.fecha_registro.strftime("%Y-%m-%d %H:%M") if usuario.fecha_registro else "N/A" }}</td>
+      <td>
+        <a href="{{ url_for('main.editar_usuario', usuario_id=usuario.id) }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Editar">
+          <i class="bi bi-pencil"></i></a>
+        </a>
+        <form method="POST" action="{{ url_for('main.eliminar_usuario', usuario_id=usuario.id) }}"
+              class="d-inline"
+              onsubmit="return confirm('¿Seguro que quieres desactivar este usuario?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Desactivar">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </form>
+
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if not usuarios %}
+<div class="alert alert-info mt-4">No hay usuarios registrados.</div>
+{% endif %}
+{% endblock %}
